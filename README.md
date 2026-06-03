@@ -1,3 +1,7 @@
+<img width="1302" height="582" alt="Screenshot 2026-06-03 at 23 14 22" src="https://github.com/user-attachments/assets/7990c39d-025a-4295-bfee-46d00bfffec8" />
+<img width="513" height="708" alt="Screenshot 2026-06-03 at 23 21 32" src="https://github.com/user-attachments/assets/5c0afb97-468b-4e4b-808f-4c2135c6b7c9" />
+Terraform deployment completed successfully. Sensitive identifiers such as subscription ID, email address, and resource IDs are redacted.
+
 # Azure MSP Operations Center
 
 Multi-tenant Azure monitoring, incident response, and SLA breach prediction platform for MSP-style cloud operations.
@@ -117,3 +121,6 @@ terraform validate
 ## Status
 
 Initial portfolio scaffold. The project is intentionally structured so it can be expanded into a deployable Azure environment with real diagnostic logs, Azure Lighthouse delegation, and Microsoft Sentinel content.
+
+<img width="1443" height="598" alt="Screenshot 2026-06-03 at 23 05 37" src="https://github.com/user-attachments/assets/599431e2-6196-4295-b135-8b878f365fa2" />
+
