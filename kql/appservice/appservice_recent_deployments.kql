@@ -1,0 +1,7 @@
+// Find recent write operations that might correlate with app incidents.
+AzureActivity
+| where TimeGenerated > ago(6h)
+| where ResourceProviderValue =~ "Microsoft.Web"
+| where OperationNameValue has_any ("write", "slotsswap", "restart")
+| project TimeGenerated, Caller, OperationNameValue, ActivityStatusValue, ResourceGroup, Resource, _ResourceId
+| order by TimeGenerated desc

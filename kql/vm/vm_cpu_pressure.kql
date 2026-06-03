@@ -1,0 +1,8 @@
+// Detect sustained VM CPU pressure.
+Perf
+| where TimeGenerated > ago(30m)
+| where ObjectName == "Processor" and CounterName == "% Processor Time" and InstanceName == "_Total"
+| summarize AvgCpu=avg(CounterValue), P95Cpu=percentile(CounterValue, 95) by Computer, _ResourceId, bin(TimeGenerated, 10m)
+| where AvgCpu >= 85 or P95Cpu >= 95
+| extend Severity="Sev3", Detection="VmCpuPressure"
+| order by P95Cpu desc

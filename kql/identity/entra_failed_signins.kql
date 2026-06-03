@@ -1,0 +1,8 @@
+// Detect excessive failed Entra sign-ins.
+SigninLogs
+| where TimeGenerated > ago(30m)
+| where ResultType != 0
+| summarize FailedSignins=count(), Apps=make_set(AppDisplayName, 10), IPs=make_set(IPAddress, 10) by UserPrincipalName, bin(TimeGenerated, 10m)
+| where FailedSignins >= 10
+| extend Severity="Sev2", Detection="EntraFailedSignins"
+| order by FailedSignins desc

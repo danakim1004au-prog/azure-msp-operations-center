@@ -1,0 +1,9 @@
+// Detect repeated Key Vault authorization failures.
+AzureDiagnostics
+| where TimeGenerated > ago(30m)
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where ResultType in ("Forbidden", "Unauthorized") or ResultSignature has_any ("403", "401")
+| summarize Failures=count(), Operations=make_set(OperationName, 10), Callers=make_set(CallerIPAddress, 10) by Resource, bin(TimeGenerated, 5m)
+| where Failures >= 3
+| extend Severity="Sev2", Detection="KeyVaultAccessDenied"
+| order by Failures desc

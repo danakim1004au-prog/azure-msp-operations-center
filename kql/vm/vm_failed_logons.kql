@@ -1,0 +1,8 @@
+// Detect repeated failed Windows logons.
+SecurityEvent
+| where TimeGenerated > ago(30m)
+| where EventID == 4625
+| summarize FailedLogons=count(), Accounts=make_set(Account, 10), IPs=make_set(IpAddress, 10) by Computer, bin(TimeGenerated, 5m)
+| where FailedLogons >= 10
+| extend Severity="Sev2", Detection="VmFailedLogons"
+| order by FailedLogons desc

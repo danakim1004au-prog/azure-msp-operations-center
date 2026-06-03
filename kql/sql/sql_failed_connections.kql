@@ -1,0 +1,9 @@
+// Detect repeated SQL failed connections.
+AzureDiagnostics
+| where TimeGenerated > ago(30m)
+| where ResourceProvider == "MICROSOFT.SQL"
+| where Category has_any ("SQLSecurityAuditEvents", "SQLInsights")
+| where action_name_s has_any ("FAILED_DATABASE_AUTHENTICATION", "DATABASE AUTHENTICATION FAILED")
+| summarize FailedConnections=count(), Principals=make_set(server_principal_name_s, 10) by Resource, bin(TimeGenerated, 5m)
+| where FailedConnections >= 5
+| extend Severity="Sev2", Detection="SqlFailedConnections"

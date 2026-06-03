@@ -1,0 +1,6 @@
+// Azure Resource Graph query: public IPs not attached to a resource.
+Resources
+| where type =~ "microsoft.network/publicipaddresses"
+| where isempty(properties.ipConfiguration)
+| project name, resourceGroup, location, sku=tostring(sku.name), publicIPAddress=tostring(properties.ipAddress), id
+| order by resourceGroup, name

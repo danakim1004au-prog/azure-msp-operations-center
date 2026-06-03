@@ -1,0 +1,9 @@
+// Detect SQL deadlock events.
+AzureDiagnostics
+| where TimeGenerated > ago(1h)
+| where ResourceProvider == "MICROSOFT.SQL"
+| where Category has_any ("Deadlocks", "QueryStoreRuntimeStatistics", "SQLSecurityAuditEvents")
+| where Message has "deadlock" or event_type_s has "deadlock"
+| summarize DeadlockEvents=count(), Samples=make_set(Message, 3) by Resource, bin(TimeGenerated, 15m)
+| where DeadlockEvents > 0
+| extend Severity="Sev2", Detection="SqlDeadlocks"

@@ -1,0 +1,10 @@
+// Example query for a custom cost export table named CostUsage_CL.
+// Replace CostUsage_CL with the table created by your Cost Management export.
+CostUsage_CL
+| where TimeGenerated > ago(14d)
+| summarize DailyCost=sum(todouble(Cost_s)) by Customer=tostring(Customer_s), bin(TimeGenerated, 1d)
+| order by Customer, TimeGenerated asc
+| serialize
+| extend SevenDayAvg=avg(DailyCost) over (partition by Customer order by TimeGenerated rows between 7 preceding and 1 preceding)
+| where isnotnull(SevenDayAvg) and DailyCost > SevenDayAvg * 1.5 and DailyCost > 10
+| extend Severity="Sev4", Detection="DailyCostAnomaly"

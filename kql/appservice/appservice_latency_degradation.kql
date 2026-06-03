@@ -1,0 +1,7 @@
+// Detect high App Service response time.
+AppServiceHTTPLogs
+| where TimeGenerated > ago(30m)
+| summarize Requests=count(), P95DurationMs=percentile(TimeTaken, 95) by _ResourceId, bin(TimeGenerated, 5m)
+| where Requests >= 20 and P95DurationMs > 3000
+| extend Severity="Sev3", Detection="AppServiceLatencyDegradation"
+| order by P95DurationMs desc

@@ -1,0 +1,8 @@
+// Detect App Service 5xx spikes by site.
+AppServiceHTTPLogs
+| where TimeGenerated > ago(15m)
+| where ScStatus between (500 .. 599)
+| summarize ErrorCount=count(), SampleUrls=make_set(CsUriStem, 5) by _ResourceId, bin(TimeGenerated, 5m)
+| where ErrorCount >= 10
+| extend Severity="Sev2", Detection="AppService5xxSpike"
+| order by ErrorCount desc

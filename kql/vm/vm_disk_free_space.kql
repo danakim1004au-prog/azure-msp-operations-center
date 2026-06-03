@@ -1,0 +1,9 @@
+// Detect low disk free space.
+Perf
+| where TimeGenerated > ago(30m)
+| where ObjectName in ("Logical Disk", "LogicalDisk") and CounterName == "% Free Space"
+| where InstanceName !in ("_Total", "HarddiskVolume1")
+| summarize MinFreePercent=min(CounterValue) by Computer, InstanceName, _ResourceId
+| where MinFreePercent < 10
+| extend Severity="Sev2", Detection="VmLowDiskSpace"
+| order by MinFreePercent asc

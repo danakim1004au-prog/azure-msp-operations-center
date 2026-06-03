@@ -1,0 +1,10 @@
+// Detect sign-ins from countries outside the expected operating region.
+let ExpectedCountries = dynamic(["KR", "AU", "US"]);
+SigninLogs
+| where TimeGenerated > ago(24h)
+| where ResultType == 0
+| extend Country=tostring(LocationDetails.countryOrRegion)
+| where isnotempty(Country) and Country !in (ExpectedCountries)
+| summarize Signins=count(), IPs=make_set(IPAddress, 10), Apps=make_set(AppDisplayName, 10) by UserPrincipalName, Country
+| extend Severity="Sev3", Detection="UnexpectedCountrySignin"
+| order by Signins desc

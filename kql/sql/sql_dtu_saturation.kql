@@ -1,0 +1,9 @@
+// Detect Azure SQL DTU saturation from AzureDiagnostics.
+AzureDiagnostics
+| where TimeGenerated > ago(30m)
+| where ResourceProvider == "MICROSOFT.SQL"
+| where MetricName_s in ("dtu_consumption_percent", "cpu_percent")
+| summarize AvgValue=avg(todouble(Average)), MaxValue=max(todouble(Maximum)) by Resource, MetricName_s, bin(TimeGenerated, 5m)
+| where MaxValue >= 90
+| extend Severity="Sev2", Detection="SqlDtuSaturation"
+| order by MaxValue desc

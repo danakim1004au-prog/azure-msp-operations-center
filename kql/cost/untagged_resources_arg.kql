@@ -1,0 +1,6 @@
+// Azure Resource Graph query: resources missing required MSP tags.
+Resources
+| extend customer=tostring(tags.customer), environment=tostring(tags.environment), owner=tostring(tags.owner)
+| where isempty(customer) or isempty(environment) or isempty(owner)
+| project name, type, resourceGroup, subscriptionId, customer, environment, owner
+| order by resourceGroup, name

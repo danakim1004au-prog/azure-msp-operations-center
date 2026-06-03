@@ -1,0 +1,8 @@
+// Detect privileged role assignment changes.
+AuditLogs
+| where TimeGenerated > ago(24h)
+| where OperationName has_any ("Add member to role", "Add eligible member to role", "Add scoped member to role")
+| extend Target=coalesce(tostring(TargetResources[0].displayName), tostring(TargetResources[0].userPrincipalName))
+| project TimeGenerated, OperationName, InitiatedBy=tostring(InitiatedBy.user.userPrincipalName), Target, Result, CorrelationId
+| extend Severity="Sev2", Detection="PrivilegedRoleChange"
+| order by TimeGenerated desc

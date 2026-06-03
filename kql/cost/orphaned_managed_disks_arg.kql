@@ -1,0 +1,7 @@
+// Azure Resource Graph query: unattached managed disks.
+Resources
+| where type =~ "microsoft.compute/disks"
+| where tostring(properties.diskState) == "Unattached"
+| extend diskSizeGb=todouble(properties.diskSizeGB), sku=tostring(sku.name)
+| project name, resourceGroup, location, sku, diskSizeGb, id
+| order by diskSizeGb desc

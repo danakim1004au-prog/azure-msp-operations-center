@@ -1,0 +1,7 @@
+// Detect VMs that have not sent heartbeat recently.
+Heartbeat
+| summarize LastHeartbeat=max(TimeGenerated) by Computer, _ResourceId
+| where LastHeartbeat < ago(10m)
+| extend MinutesSinceHeartbeat=datetime_diff("minute", now(), LastHeartbeat)
+| extend Severity="Sev2", Detection="VmHeartbeatMissing"
+| order by LastHeartbeat asc
